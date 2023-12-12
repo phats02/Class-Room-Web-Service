@@ -184,6 +184,7 @@ module.exports = {
     const course = await Course.findById(req.body.courseId);
     const userEmail = req.body.email;
     const teacherId = req.user._id;
+    const type = req.body.type;
     if (!course) {
       res.json({
         code: res.statusCode,
@@ -200,8 +201,36 @@ module.exports = {
       });
       return;
     }
-    const inviteLink = `${CLIENT_URL}/classes/join/${course.joinId}`;
-    const message = `<p>You are invited to a course on the course in system. Click on the link if you agree: <a href="${inviteLink}">Link</a></p>`;
+    const invitedUser = await User.findOne({ email: userEmail });
+    if (!invitedUser) {
+      res.json({
+        code: res.statusCode,
+        success: false,
+        message: "User with email not found",
+      });
+      return;
+    }
+    const invitation = new Invitation({
+      courseId: course._id,
+      inviteCode: nanoid(8),
+      type: type === undefined ? 0 : type,
+      userId: invitedUser._id,
+    });
+    try {
+      invitation.save();
+    } catch (err) {
+      console.error(err);
+      res.json({
+        code: res.statusCode,
+        success: false,
+        message: "Cannot create invitation",
+      });
+      return;
+    }
+    const inviteLink = `${CLIENT_URL}/classes/join/${invitation.inviteCode}`;
+    const message = type
+      ? `<p>You are invited to a course on the course pin system. Click on the link if you agree: <a href="${inviteLink}">Link</a></p>`
+      : `<p>You are invited to be a teacher in a course on the course pin system. Click on the link if you agree: <a href="${inviteLink}">Link</a></p>`;
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -218,7 +247,7 @@ module.exports = {
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-      from: '"CoursePin" <coursepincourseroom@gmail.com>', // sender address
+      from: '"Class Grad" <coursepincourseroom@gmail.com>', // sender address
       to: userEmail, // list of receivers
       subject: "Someone invited you to join course", // Subject line
       text: "Hello world", // plain text body
@@ -316,15 +345,56 @@ module.exports = {
 
   joinCourse: async (req, res, next) => {
     const userId = req.user._id;
-    const course = await Course.findOne({ joinId: req.params.id });
-    if (!course) {
-      res.json({
-        code: res.statusCode,
-        success: false,
-        message: "Course not found",
-      });
+    const invitation = await Invitation.findOne({ inviteCode: req.params.id });
+    if (!invitation) {
+      /*=============== Join by code =============== */
+      const course = await Course.findOne({ joinId: req.params.id });
+      if (!course) {
+        res.json({
+          code: res.statusCode,
+          success: false,
+          message: "Invite not found",
+        });
+        return;
+      }
+      if (course.teachers.includes(userId)) {
+        res.json({
+          code: res.statusCode,
+          success: false,
+          message: "Already a teacher",
+        });
+        return;
+      }
+      if (course.students && course.students.includes(userId)) {
+        res.json({
+          code: res.statusCode,
+          success: false,
+          message: "You have already joined this course",
+        });
+        return;
+      }
+      if (!course.students) {
+        course.students = [];
+      }
+      course.students.push(userId);
+      try {
+        await course.save();
+        res.json({
+          code: res.statusCode,
+          success: true,
+          message: "Course joined successfully",
+          course: course,
+        });
+      } catch (err) {
+        res.json({
+          code: res.statusCode,
+          success: false,
+          message: err.message,
+        });
+      }
       return;
     }
+    const course = await Course.findById(invitation.courseId);
     if (course.teachers.includes(userId)) {
       res.json({
         code: res.statusCode,
