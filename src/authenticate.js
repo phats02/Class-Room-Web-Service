@@ -1,11 +1,11 @@
-const passport = require('passport');
-const FacebookTokenStrategy = require('passport-facebook-token');
-const GoogleTokenStrategy = require('passport-google-token').Strategy;
-const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJWT = require('passport-jwt').ExtractJwt;
-const jwt = require('jsonwebtoken');
-const config = require('./config/mainConfig');
-const User = require('./models/User');
+const passport = require("passport");
+const FacebookTokenStrategy = require("passport-facebook-token");
+const GoogleTokenStrategy = require("passport-google-token").Strategy;
+const JwtStrategy = require("passport-jwt").Strategy;
+const ExtractJWT = require("passport-jwt").ExtractJwt;
+const jwt = require("jsonwebtoken");
+const config = require("./config/mainConfig");
+const User = require("./models/User");
 
 passport.serializeUser(function (user, done) {
   done(null, user);
@@ -47,6 +47,7 @@ exports.googlePassport = passport.use(
       clientSecret: config.GOOGLE_CLIENT_SECRET,
     },
     (accessToken, refreshToken, profile, done) => {
+      console.log("🚀 ~ file: authenticate.js:50 ~ accessToken:", accessToken);
       User.findOne({ email: profile.emails[0].value }, (err, user) => {
         if (err) {
           return done(err, false);
@@ -102,12 +103,12 @@ exports.facebookPassport = passport.use(
   )
 );
 
-exports.verifyFacebook = passport.authenticate('facebook-token', {
+exports.verifyFacebook = passport.authenticate("facebook-token", {
   session: false,
 });
 
-exports.verifyGoogle = passport.authenticate('google-token', {
+exports.verifyGoogle = passport.authenticate("google-token", {
   session: false,
 });
 
-exports.verifyUser = passport.authenticate('jwt', { session: false });
+exports.verifyUser = passport.authenticate("jwt", { session: false });
