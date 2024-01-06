@@ -15,5 +15,17 @@ router.get(
   authenticate.verifyFacebook,
   authController.socialLogin
 );
+router.post("/forgot-password", authController.postForgotPassword);
+router.get(
+  "/forgot-password/:forgotPasswordCode",
+  authController.getCheckForgotPasswordCode
+);
+router.post(
+  "/forgot-password/:forgotPasswordCode",
+  authController.resetPassword
+);
+router.get("/activation/:activationCode", authController.activation);
+
+router.post("/admin/login", authController.postAdminLogin);
 
 module.exports = router;

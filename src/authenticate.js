@@ -32,6 +32,7 @@ exports.jwtPassport = passport.use(
         return done(err, false);
       }
       if (user) {
+        if (!user.status) return done(null, false);
         return done(null, user);
       } else {
         return done(null, false);
@@ -47,7 +48,6 @@ exports.googlePassport = passport.use(
       clientSecret: config.GOOGLE_CLIENT_SECRET,
     },
     (accessToken, refreshToken, profile, done) => {
-      console.log("🚀 ~ file: authenticate.js:50 ~ accessToken:", accessToken);
       User.findOne({ email: profile.emails[0].value }, (err, user) => {
         if (err) {
           return done(err, false);
@@ -57,7 +57,7 @@ exports.googlePassport = passport.use(
         } else {
           const newUser = new User({
             googleId: profile.id,
-            fullName: profile.displayName,
+            name: profile.displayName,
             email: profile.emails[0].value,
           });
           newUser.save((err, user) => {
@@ -88,7 +88,7 @@ exports.facebookPassport = passport.use(
         } else {
           const newUser = new User({
             facebookId: profile.id,
-            fullName: profile.displayName,
+            name: profile.displayName,
             email: profile.emails[0].value,
           });
           newUser.save((err, user) => {
