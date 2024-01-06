@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { createUseStyles } from "react-jss";
-import { ClassRoom } from "../../types/Classroom.typs";
+import { ClassRoom } from "../../types/Classroom.type";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux-toolkit/store";
@@ -53,7 +53,7 @@ const ClassCard = ({ classroom }: Props) => {
     <Card
       sx={{ maxWidth: 300, cursor: "pointer" }}
       onClick={() => {
-        navigate("/classes/" + classroom._id);
+        navigate("/classes/" + classroom.slug);
       }}
     >
       <div

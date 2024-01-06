@@ -61,7 +61,7 @@ const JoinClass = () => {
             setVerifyResult(VerifyResult.SUCCESS);
             return;
           }
-          if (!res?.success) throw res?.message || "Cannot send your request";
+          if (!res.success) throw res.message || "Cannot send your request";
         }
         toast.success("Joined class with " + code + " successfully");
         setVerifyResult(VerifyResult.SUCCESS);

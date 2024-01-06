@@ -1,5 +1,5 @@
 export type FailedResponse = {
   code: number;
-  success: boolean;
-  message?: string;
+  success: false;
+  message: string;
 };

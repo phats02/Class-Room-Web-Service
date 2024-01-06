@@ -1,15 +1,16 @@
-import { ClassRoom } from "./../../types/Classroom.typs";
+import { Assignment } from "./../../types/Classroom.type";
+import { ClassRoom } from "../../types/Classroom.type";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ClassRoomApi } from "../../api/classroom";
 import _ from "lodash";
 
 type ClassRoomSlice = {
-  listClassRoom: ClassRoom[] | null;
-  currentClassRoom: ClassRoom | null;
+  listClassRoom: ClassRoom[];
+  currentClassRoom: ClassRoom;
 };
 const initialState: ClassRoomSlice = {
-  listClassRoom: null,
-  currentClassRoom: null,
+  listClassRoom: null as unknown as ClassRoom[],
+  currentClassRoom: null as unknown as ClassRoom,
 };
 
 export const fetchListClassRoom = createAsyncThunk(
@@ -44,6 +45,27 @@ const ClassroomSlice = createSlice({
       state.listClassRoom =
         state.listClassRoom?.filter((item) => item._id !== classId) || null;
     },
+    addAssignment: (state, action: PayloadAction<Assignment>) => {
+      const assignment = action.payload;
+      state.currentClassRoom.assignments = [
+        ...state.currentClassRoom.assignments,
+        assignment,
+      ];
+    },
+    updateAssignment: (state, action: PayloadAction<Assignment>) => {
+      const assignment = action.payload;
+      state.currentClassRoom.assignments = _.uniqBy(
+        [...state.currentClassRoom.assignments, assignment],
+        "_id"
+      );
+    },
+    deleteAssignment: (state, action: PayloadAction<string>) => {
+      const assignmentId = action.payload;
+      state.currentClassRoom.assignments =
+        state.currentClassRoom.assignments.filter(
+          (item) => item._id !== assignmentId
+        );
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchListClassRoom.fulfilled, (state, action) => {
@@ -53,5 +75,12 @@ const ClassroomSlice = createSlice({
 });
 
 export const classroomReducer = ClassroomSlice.reducer;
-export const { setListClassRoom, addClass, setCurrentClass, deleteClass } =
-  ClassroomSlice.actions;
+export const {
+  setListClassRoom,
+  addClass,
+  setCurrentClass,
+  deleteClass,
+  addAssignment,
+  updateAssignment,
+  deleteAssignment,
+} = ClassroomSlice.actions;
