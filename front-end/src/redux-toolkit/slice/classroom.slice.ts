@@ -1,4 +1,4 @@
-import { Assignment } from "./../../types/Classroom.type";
+import { Assignment, Grade } from "./../../types/Classroom.type";
 import { ClassRoom } from "../../types/Classroom.type";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ClassRoomApi } from "../../api/classroom";
@@ -66,6 +66,21 @@ const ClassroomSlice = createSlice({
           (item) => item._id !== assignmentId
         );
     },
+    updateGrade: (
+      state,
+      action: PayloadAction<{ assignmentId: string; grades: Grade[] }>
+    ) => {
+      const { assignmentId, grades } = action.payload;
+      state.currentClassRoom.assignments =
+        state.currentClassRoom.assignments.map((item) =>
+          item._id === assignmentId
+            ? {
+                ...item,
+                grades: grades,
+              }
+            : item
+        );
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchListClassRoom.fulfilled, (state, action) => {
@@ -83,4 +98,5 @@ export const {
   addAssignment,
   updateAssignment,
   deleteAssignment,
+  updateGrade,
 } = ClassroomSlice.actions;

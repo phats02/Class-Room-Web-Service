@@ -1,4 +1,4 @@
-const Course = require('../models/Course');
+const Course = require("../models/Course");
 
 module.exports = {
   getCourseBySlug: async (req, res, next) => {
@@ -8,7 +8,7 @@ module.exports = {
       return res.json({
         code: 404,
         success: false,
-        message: 'Course not found',
+        message: "Course not found",
       });
     }
     req.course = course;
@@ -22,7 +22,7 @@ module.exports = {
       return res.json({
         code: 404,
         success: false,
-        message: 'Course not found',
+        message: "Course not found",
       });
     }
     req.course = course;
@@ -35,9 +35,10 @@ module.exports = {
       return res.json({
         code: 403,
         success: false,
-        message: 'Forbidden',
+        message: "Forbidden",
       });
     }
+    req.isTeacher = true;
     next();
   },
 
@@ -50,7 +51,7 @@ module.exports = {
       return res.json({
         code: 403,
         success: false,
-        message: 'Forbidden',
+        message: "Forbidden",
       });
     }
     if (course.teachers.toString().includes(req.user._id)) {
@@ -68,7 +69,7 @@ module.exports = {
       return res.json({
         code: 403,
         success: false,
-        message: 'Forbidden',
+        message: "Forbidden",
       });
     }
     next();

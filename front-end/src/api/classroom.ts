@@ -1,4 +1,4 @@
-import { ClassRoom, Assignment } from "../types/Classroom.type";
+import { ClassRoom, Assignment, Grade } from "../types/Classroom.type";
 import { FailedResponse } from "../types/Response.type";
 import { configuredAxios } from "./axios-config";
 
@@ -116,6 +116,53 @@ const deleteAssignment = async (
   );
   return res.data;
 };
+
+const getGrade = async (
+  classSlug: string,
+  assignmentId: string
+): Promise<
+  | FailedResponse
+  | { code: string; success: true; message: string; grade: Grade[] }
+> => {
+  const res = await configuredAxios.get(
+    "/courses/" + classSlug + "/assignment/" + assignmentId + "/grade"
+  );
+  return res.data;
+};
+
+const setGradeAssignment = async (
+  classSlug: string,
+  assignmentId: string,
+  body: {
+    grade: string;
+    studentId: string;
+  }
+): Promise<
+  FailedResponse | { code: string; success: true; message: string }
+> => {
+  const res = await configuredAxios.post(
+    "/courses/" + classSlug + "/assignment/" + assignmentId + "/grade",
+    body
+  );
+  return res.data;
+};
+
+const finalizeGrade = async (
+  classSlug: string,
+  assignmentId: string,
+  body: {
+    studentId: string;
+  }
+): Promise<
+  FailedResponse | { code: string; success: true; message: string }
+> => {
+  const res = await configuredAxios.post(
+    "/courses/" + classSlug + "/assignment/" + assignmentId + "/finalize",
+    body
+  );
+  return res.data;
+};
+
 export const ClassRoomApi = {
   getAllClass,
   createClass,
@@ -127,4 +174,10 @@ export const ClassRoomApi = {
   addAssignment,
   updateAssignment,
   deleteAssignment,
+};
+
+export const AssignmentGradeAPI = {
+  setGradeAssignment,
+  getGrade,
+  finalizeGrade,
 };

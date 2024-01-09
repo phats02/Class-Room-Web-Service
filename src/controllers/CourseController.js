@@ -705,7 +705,8 @@ module.exports = {
   },
 
   getSingleStudentGrade: async (req, res, next) => {
-    const id = res.params.id;
+    const id = req.params.id;
+
     const assignment = await Assignment.findById(id);
     if (!assignment) {
       res.json({

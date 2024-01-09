@@ -64,6 +64,9 @@ const generateNewAssignment = (): Assignment => ({
   _id: uuidv4(),
   name: "",
   point: 0.0,
+  createAt: new Date().toString(),
+  updateAt: new Date().toString(),
+  grades: [],
 });
 const AssignmentComposition = ({ currentClassRoom, onChange }: Props) => {
   const classes = useStyle();

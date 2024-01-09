@@ -2,6 +2,8 @@ import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import SwipeableViews from "react-swipeable-views";
 import ClassRoomSetting from "./Setting";
+import Stream from "./Stream";
+import Grade from "./Grade";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -54,23 +56,26 @@ const RightSide = () => {
         <Tabs
           value={value}
           onChange={handleChange}
-          indicatorColor="secondary"
+          indicatorColor="primary"
           textColor="inherit"
-          aria-label="full width tabs example"
         >
           <Tab label="Stream" {...a11yProps(0)} />
           <Tab label="People" {...a11yProps(1)} />
+          <Tab label="Grade" {...a11yProps(1)} />
           <Tab label="Setting" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <SwipeableViews index={value} onChangeIndex={handleChangeIndex}>
         <TabPanel value={value} index={0}>
-          Stream
+          <Stream></Stream>
         </TabPanel>
         <TabPanel value={value} index={1}>
           People
         </TabPanel>
         <TabPanel value={value} index={2}>
+          <Grade />
+        </TabPanel>
+        <TabPanel value={value} index={3}>
           <ClassRoomSetting></ClassRoomSetting>
         </TabPanel>
       </SwipeableViews>
